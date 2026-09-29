@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Zyklus & Termine</title>
+<style>
+:root{--bg:#f3f1f7;--card:#fff;--ink:#1f1b2e;--mute:#6f6a80;--per:#b23a5e;--pred:#ecc3d1;--fer:#cfe0f5;--ovu:#5f8fd0;--apt:#2f6f6a;--line:#e2deec;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15121f;--card:#211d30;--ink:#efecf7;--mute:#a49fb6;--per:#e0688c;--pred:#5e2d40;--fer:#2a4260;--ovu:#4a78b8;--apt:#5cb3ab;--line:#332e47}}
+:root[data-theme="dark"]{--bg:#15121f;--card:#211d30;--ink:#efecf7;--mute:#a49fb6;--per:#e0688c;--pred:#5e2d40;--fer:#2a4260;--ovu:#4a78b8;--apt:#5cb3ab;--line:#332e47}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 -apple-system,system-ui,"Segoe UI",sans-serif}
+main{max-width:480px;margin:0 auto;padding:16px 16px 96px}
+h1,h2,.big{font-family:Georgia,"Times New Roman",serif;font-weight:600;margin:0}
+h2{font-size:22px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin:12px 0}
+.hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.hd button{font-size:26px;width:44px;height:44px}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--per);outline-offset:2px}
+.g{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.wd span{text-align:center;color:var(--mute);font-size:13px}
+.c{aspect-ratio:1;border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;font-size:15px}
+.c.per{background:var(--per);color:#fff}
+.c.pred{background:var(--pred)}
+.c.fer{background:var(--fer)}
+.c.ovu{background:var(--ovu);color:#fff}
+.c.t{box-shadow:0 0 0 2px var(--ink) inset}
+.c.dot::after{content:"";position:absolute;bottom:4px;width:5px;height:5px;border-radius:50%;background:var(--apt)}
+.c.per.dot::after{background:#fff}
+.lg{display:flex;gap:14px;flex-wrap:wrap;color:var(--mute);font-size:13px;margin:12px 0 0}
+.lg i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px}
+.big{font-size:34px;line-height:1.15}
+.mute{color:var(--mute);font-size:14px}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.kv b{display:block;font-family:Georgia,serif;font-size:24px;font-weight:600}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 0;border-top:1px solid var(--line)}
+.row:first-of-type{border-top:0}
+.row button{color:var(--per);font-size:14px}
+nav{position:fixed;left:0;right:0;bottom:0;display:flex;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+nav button{flex:1;padding:14px 0;color:var(--mute);font-size:15px}
+nav button.on{color:var(--per);font-weight:600}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:flex-end}
+.ov.o{display:flex}
+.sh{background:var(--card);width:100%;max-width:480px;margin:0 auto;border-radius:20px 20px 0 0;padding:20px 20px calc(20px + env(safe-area-inset-bottom,0px));max-height:88%;overflow:auto}
+input,select{font:inherit;width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);margin:6px 0}
+.btn{display:block;width:100%;padding:12px;border-radius:12px;border:1px solid var(--line);margin:8px 0;text-align:center}
+.btn.pri{background:var(--per);color:#fff;border-color:var(--per)}
+label{font-size:14px;color:var(--mute)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0}.chips button{padding:6px 12px;border:1px solid var(--line);border-radius:999px;font-size:14px}
+</style></head>
+<body>
+<main id="v"></main>
+<nav><button onclick="go(0)">Kalender</button><button onclick="go(1)">Zyklus</button><button onclick="go(2)">Termine</button></nav>
+<div class="ov" id="ov" onclick="if(event.target===this)cl()"><div class="sh">
+<h2 id="sd">Eintrag</h2>
+<label for="dt">Datum</label><input type="date" id="dt" onchange="sh()">
+<button class="btn pri" id="eb" onclick="ep()" style="display:none"></button>
+<button class="btn" id="pb" onclick="tp()"></button>
+<div id="al"></div>
+<label for="ti">Neuer Arzttermin: Ärztin/Arzt</label>
+<div class="chips" id="chips"></div>
+<input id="ti" placeholder="Auswählen oder neu eingeben" autocomplete="off">
+<label for="dn">Name (optional)</label><input id="dn" placeholder="z. B. Dr. Müller" autocomplete="off">
+<label for="tm">Uhrzeit (optional)</label><input type="time" id="tm">
+<label for="iv">Wie oft?</label>
+<select id="iv"><option value="0">Keine feste Frequenz</option><option value="1">Jeden Monat</option><option value="2">Alle 2 Monate</option><option value="3">Alle 3 Monate</option><option value="4">Alle 4 Monate</option><option value="6">Alle 6 Monate</option><option value="12">1× pro Jahr</option><option value="18">Alle 18 Monate</option><option value="24">Alle 2 Jahre</option><option value="36">Alle 3 Jahre</option></select>
+<button class="btn pri" onclick="addA()">Termin speichern</button>
+<button class="btn" onclick="cl()">Schließen</button>
+</div></div>
+<script>
+const $=s=>document.querySelector(s);
+let S={days:[],apts:[]};
+try{S=Object.assign(S,JSON.parse(localStorage.getItem('zt')||'{}'))}catch(e){}
+const save=()=>{try{localStorage.setItem('zt',JSON.stringify(S))}catch(e){}};
+const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const parse=s=>{const[a,b,c]=s.split('-').map(Number);return new Date(a,b-1,c)};
+const dd=(a,b)=>Math.round((parse(b)-parse(a))/864e5);
+const add=(s,n)=>{const d=parse(s);d.setDate(d.getDate()+n);return iso(d)};
+const addM=(s,n)=>{const d=parse(s),day=d.getDate();d.setDate(1);d.setMonth(d.getMonth()+n);d.setDate(Math.min(day,new Date(d.getFullYear(),d.getMonth()+1,0).getDate()));return iso(d)};
+const today=iso(new Date());
+const fmt=s=>parse(s).toLocaleDateString('de-DE',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+const rel=d=>{const n=dd(today,d);return n===0?'heute':n>0?`in ${n} ${n==1?'Tag':'Tagen'}`:`vor ${-n} ${-n==1?'Tag':'Tagen'}`};
+const f1=x=>x==null?'–':(Math.round(x*10)/10).toString().replace('.',',');
+const esc=t=>t.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const MN=['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+let tab=0,vy=new Date().getFullYear(),vm=new Date().getMonth();
+
+function periods(){const p=[];for(const x of [...S.days].sort()){const l=p[p.length-1];if(l&&dd(l.end,x)<=2)l.end=x;else p.push({start:x,end:x})}return p}
+function stats(){
+  const p=periods(),cyc=[];
+  for(let i=1;i<p.length;i++)cyc.push(dd(p[i-1].start,p[i].start));
+  const rc=cyc.slice(-6),pl=p.slice(-6).map(x=>dd(x.start,x.end)+1);
+  const avg=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:null;
+  const m=avg(rc),sd=rc.length>1?Math.sqrt(rc.reduce((s,x)=>s+(x-m)**2,0)/(rc.length-1)):null;
+  return{p,cyc,avgC:m,sd,minC:rc.length?Math.min(...rc):null,maxC:rc.length?Math.max(...rc):null,avgP:avg(pl),
+    next:rc.length?add(p[p.length-1].start,Math.round(m)):null};
+}
+function go(i){tab=i;render()}
+function mv(n){vm+=n;if(vm<0){vm=11;vy--}if(vm>11){vm=0;vy++}render()}
+
+function cal(st){
+  const off=(new Date(vy,vm,1).getDay()+6)%7,dim=new Date(vy,vm+1,0).getDate();
+  const ps=new Set();if(st.next){for(let i=0;i<Math.round(st.avgP||5);i++)ps.add(add(st.next,i))}
+  const ov=st.next?add(st.next,-14):null,fs=new Set();if(st.next){for(let i=-19;i<=-13;i++)fs.add(add(st.next,i))}
+  const ds=new Set(S.days),as=new Set(S.apts.map(a=>a.date));
+  let h=`<div class="hd"><button aria-label="Vorheriger Monat" onclick="mv(-1)">‹</button><h2>${MN[vm]} ${vy}</h2><button aria-label="Nächster Monat" onclick="mv(1)">›</button></div>
+  <div class="g wd">${['Mo','Di','Mi','Do','Fr','Sa','So'].map(x=>`<span>${x}</span>`).join('')}</div><div class="g">`;
+  for(let i=0;i<off;i++)h+='<span></span>';
+  for(let d=1;d<=dim;d++){const k=iso(new Date(vy,vm,d));
+    h+=`<button class="c${ds.has(k)?' per':ps.has(k)?' pred':k===ov?' ovu':fs.has(k)?' fer':''}${as.has(k)?' dot':''}${k===today?' t':''}" onclick="op('${k}')">${d}</button>`}
+  return h+`</div><p class="lg"><span><i style="background:var(--per)"></i>Periode</span><span><i style="background:var(--pred)"></i>erwartet</span><span><i style="background:var(--fer)"></i>fruchtbar</span><span><i style="background:var(--ovu)"></i>Eisprung</span><span><i style="background:var(--apt)"></i>Termin</span></p>
+  <p class="mute">Tippe auf einen Tag, um die Periode oder einen Arzttermin einzutragen.</p>`;
+}
+function cyc(st){
+  if(!st.next)return `<h2>Zyklus</h2><div class="card"><p>Trag im Kalender mindestens zwei Periodenstarts ein. Dann berechne ich Zyklus, Schwankung und die nächste Periode.</p></div>`+bk();
+  const late=dd(st.next,today)>0&&dd(st.p[st.p.length-1].start,today)>=Math.round(st.avgC);
+  const rows=st.p.slice(-6).reverse().map((p,i,a)=>{const idx=st.p.length-1-i;const c=idx>0?dd(st.p[idx-1].start,p.start):null;
+    return `<div class="row"><span>${fmt(p.start)}</span><span class="mute">${c?c+' Tage Zyklus · ':''}${dd(p.start,p.end)+1} Tage Periode</span></div>`}).join('');
+  return `<h2>Zyklus</h2>
+  <div class="card"><div class="mute">Nächste Periode erwartet</div><div class="big">${rel(st.next)}</div>
+  <div class="mute">${fmt(st.next)}${late?' · später als üblich':''}</div>
+  <div class="mute">Mögliche Spanne: ${fmt(add(st.p[st.p.length-1].start,st.minC))} bis ${fmt(add(st.p[st.p.length-1].start,st.maxC))}</div></div>
+  <div class="card kv"><div><b>${f1(st.avgC)} Tage</b><span class="mute">Ø Zykluslänge</span></div>
+  <div><b>${f1(st.avgP)} Tage</b><span class="mute">Ø Periodenlänge</span></div>
+  <div><b>${st.sd==null?'–':'± '+f1(st.sd)}</b><span class="mute">Schwankung</span></div>
+  <div><b>${st.minC}–${st.maxC}</b><span class="mute">kürzester–längster</span></div></div>
+  <div class="card"><div class="mute">Letzte Zyklen (Auswertung der letzten 6)</div>${rows}</div>`+bk();
+}
+function bk(){return `<div class="card"><div class="mute">Sicherung</div><button class="btn" onclick="ex()">Daten kopieren</button><button class="btn" onclick="im()">Daten einfügen</button></div>`}
+const T=()=>[...new Map(S.apts.map(a=>[a.title.trim().toLowerCase(),a.title.trim()])).values()].sort((a,b)=>a.localeCompare(b,'de'));
+let TL=[];
+const ivMap=()=>{const m={};[...S.apts].sort((a,b)=>a.date.localeCompare(b.date)).forEach(a=>{if(+a.iv>0)m[a.title.trim().toLowerCase()]=+a.iv});return m};
+const fq=n=>n==12?'1× pro Jahr':n>12&&n%12==0?`alle ${n/12} Jahre`:n==1?'jeden Monat':`alle ${n} Monate`;
+const ym=d=>parse(d).toLocaleDateString('de-DE',{month:'long',year:'numeric'});
+function apt(){
+  const cmp=(a,b)=>(a.date+(a.time||'')).localeCompare(b.date+(b.time||''));
+  const iv=ivMap(),g={};
+  S.apts.forEach(a=>{const k=a.title.trim().toLowerCase();(g[k]=g[k]||{n:a.title.trim(),l:[]}).l.push(a)});
+  const rows=Object.entries(g).map(([k,x])=>{
+    const f=x.l.filter(a=>a.date>=today).sort(cmp)[0],p=x.l.filter(a=>a.date<today).sort(cmp).pop(),n=iv[k]||0;
+    const due=!f&&p&&n?addM(p.date,n):null;
+    return{n:x.n,f,p,q:n,due,key:f?f.date:due||'9999'};
+  }).sort((a,b)=>a.key.localeCompare(b.key)||a.n.localeCompare(b.n,'de'));
+  const up=S.apts.filter(a=>a.date>=today).sort(cmp),past=S.apts.filter(a=>a.date<today).sort(cmp).reverse().slice(0,5);
+  const li=a=>`<div class="row"><span>${esc(a.title)}<br><span class="mute">${a.dn?esc(a.dn)+' · ':''}${fmt(a.date)}${a.time?' · '+a.time:''}</span></span><button onclick="del('${a.id}')">Löschen</button></div>`;
+  const row=r=>{
+    const q=r.q?' · '+fq(r.q):'';
+    if(r.f)return `<div class="row"><span>${esc(r.n)}<br><span class="mute">${r.f.dn?esc(r.f.dn)+' · ':''}${fmt(r.f.date)}${r.f.time?' · '+r.f.time:''}${q}</span></span><b>${rel(r.f.date)}</b></div>`;
+    if(r.due){const late=r.due.slice(0,7)<today.slice(0,7);
+      return `<div class="row"><span>${esc(r.n)}<br><span class="mute">Zuletzt ${r.p.dn?esc(r.p.dn)+', ':''}${fmt(r.p.date)}${q}${late?' · <span style="color:var(--per)">überfällig</span>':''}</span></span><b>${ym(r.due)}</b></div>`}
+    return `<div class="row"><span>${esc(r.n)}<br><span class="mute">Zuletzt ${r.p.dn?esc(r.p.dn)+', ':''}${fmt(r.p.date)}</span></span><span class="mute">kein Termin geplant</span></div>`};
+  return `<h2>Arzttermine</h2><button class="btn pri" onclick="op(today)">Termin eintragen</button>
+  <div class="card"><div class="mute">Nächster Termin je Ärztin/Arzt</div>${rows.length?rows.map(row).join(''):'<p class="mute">Noch keine Termine eingetragen.</p>'}</div>
+  ${up.length?`<div class="card"><div class="mute">Alle anstehenden Termine</div>${up.map(li).join('')}</div>`:''}
+  ${past.length?`<div class="card"><div class="mute">Vergangene Termine</div>${past.map(li).join('')}</div>`:''}`;
+}
+function render(){
+  const st=stats();
+  $('#v').innerHTML=tab==0?cal(st):tab==1?cyc(st):apt();
+  document.querySelectorAll('nav button').forEach((b,i)=>b.classList.toggle('on',i==tab));
+}
+function op(d){$('#dt').value=d;sh();$('#ov').classList.add('o')}
+function cl(){$('#ov').classList.remove('o');$('#ti').value='';$('#tm').value='';$('#iv').value='0';$('#dn').value=''}
+const lastP=d=>{const p=periods().filter(x=>x.start<d);return p[p.length-1]};
+function sh(){
+  const d=$('#dt').value;if(!d)return;
+  const on=S.days.includes(d),p=lastP(d),gap=p?dd(p.end,d):0,can=!on&&gap>=1&&gap<=10;
+  $('#sd').textContent=fmt(d);
+  $('#pb').textContent=on?'Diesen Tag aus der Periode entfernen':'Periode beginnt an diesem Tag';
+  $('#pb').className='btn'+(on||can?'':' pri');
+  $('#eb').style.display=can?'':'none';
+  $('#eb').textContent='Periode endete an diesem Tag';
+  $('#al').innerHTML=S.apts.filter(a=>a.date===d).map(a=>`<div class="row"><span>${esc(a.title)}${a.dn?' ('+esc(a.dn)+')':''}${a.time?' · '+a.time:''}</span><button onclick="del('${a.id}')">Löschen</button></div>`).join('');
+  TL=T();
+  $('#chips').innerHTML=TL.map((n,i)=>`<button onclick="pick(${i})">${esc(n)}</button>`).join('');
+}
+function pick(i){$('#ti').value=TL[i];$('#iv').value=String(ivMap()[TL[i].toLowerCase()]||0)}
+function tp(){const d=$('#dt').value;S.days=S.days.includes(d)?S.days.filter(x=>x!==d):[...S.days,d];save();cl();render()}
+function ep(){const d=$('#dt').value,p=lastP(d);if(!p)return;const s=new Set(S.days);for(let i=1;i<=dd(p.end,d);i++)s.add(add(p.end,i));S.days=[...s];save();cl();render()}
+function addA(){const t=$('#ti').value.trim();if(!t){$('#ti').focus();return}S.apts.push({id:Date.now().toString(36),title:t,date:$('#dt').value,time:$('#tm').value,iv:+$('#iv').value,dn:$('#dn').value.trim()});save();cl();render()}
+function del(id){S.apts=S.apts.filter(a=>a.id!==id);save();if($('#ov').classList.contains('o'))sh();render()}
+async function ex(){const j=JSON.stringify(S);try{await navigator.clipboard.writeText(j);alert('Kopiert. Füge die Sicherung z. B. in eine Notiz ein.')}catch(e){prompt('Sicherung kopieren:',j)}}
+function im(){const t=prompt('Sicherung hier einfügen:');if(!t)return;try{const o=JSON.parse(t);if(!Array.isArray(o.days)||!Array.isArray(o.apts))throw 0;S=o;save();render()}catch(e){alert('Das ist keine gültige Sicherung.')}}
+render();
+</script></body></html>
