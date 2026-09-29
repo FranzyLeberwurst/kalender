@@ -7,9 +7,9 @@
 <link rel="icon" href="icon.png">
 <title>Zyklus & Termine</title>
 <style>
-:root{--bg:#f3f1f7;--card:#fff;--ink:#1f1b2e;--mute:#6f6a80;--per:#b23a5e;--pred:#ecc3d1;--fer:#cfe0f5;--ovu:#5f8fd0;--apt:#2f6f6a;--line:#e2deec;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15121f;--card:#211d30;--ink:#efecf7;--mute:#a49fb6;--per:#e0688c;--pred:#5e2d40;--fer:#2a4260;--ovu:#4a78b8;--apt:#5cb3ab;--line:#332e47}}
-:root[data-theme="dark"]{--bg:#15121f;--card:#211d30;--ink:#efecf7;--mute:#a49fb6;--per:#e0688c;--pred:#5e2d40;--fer:#2a4260;--ovu:#4a78b8;--apt:#5cb3ab;--line:#332e47}
+:root{--bg:#f3f1f7;--card:#fff;--ink:#1f1b2e;--mute:#6f6a80;--per:#b23a5e;--pred:#ecc3d1;--fer:#cfe0f5;--ovu:#5f8fd0;--ok:#3f9b5b;--no:#d0453f;--apt:#2f6f6a;--line:#e2deec;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15121f;--card:#211d30;--ink:#efecf7;--mute:#a49fb6;--per:#e0688c;--pred:#5e2d40;--fer:#2a4260;--ovu:#4a78b8;--ok:#6fcf8c;--no:#ef7a74;--apt:#5cb3ab;--line:#332e47}}
+:root[data-theme="dark"]{--bg:#15121f;--card:#211d30;--ink:#efecf7;--mute:#a49fb6;--per:#e0688c;--pred:#5e2d40;--fer:#2a4260;--ovu:#4a78b8;--ok:#6fcf8c;--no:#ef7a74;--apt:#5cb3ab;--line:#332e47}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 -apple-system,system-ui,"Segoe UI",sans-serif}
@@ -28,6 +28,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .c.pred{background:var(--pred)}
 .c.fer{background:var(--fer)}
 .c.ovu{background:var(--ovu);color:#fff}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:8px}.dot.ok{background:var(--ok)}.dot.no{background:var(--no)}
 .c.t{box-shadow:0 0 0 2px var(--ink) inset}
 .c.dot::after{content:"";position:absolute;bottom:4px;width:5px;height:5px;border-radius:50%;background:var(--apt)}
 .c.per.dot::after{background:#fff}
@@ -149,10 +150,10 @@ function apt(){
   const li=a=>`<div class="row"><span>${esc(a.title)}<br><span class="mute">${a.dn?esc(a.dn)+' · ':''}${fmt(a.date)}${a.time?' · '+a.time:''}</span></span><button onclick="del('${a.id}')">Löschen</button></div>`;
   const row=r=>{
     const q=r.q?' · '+fq(r.q):'';
-    if(r.f)return `<div class="row"><span>${esc(r.n)}<br><span class="mute">${r.f.dn?esc(r.f.dn)+' · ':''}${fmt(r.f.date)}${r.f.time?' · '+r.f.time:''}${q}</span></span><b>${rel(r.f.date)}</b></div>`;
+    if(r.f)return `<div class="row"><span><i class="dot ok"></i>${esc(r.n)}<br><span class="mute">gebucht · ${r.f.dn?esc(r.f.dn)+' · ':''}${fmt(r.f.date)}${r.f.time?' · '+r.f.time:''}${q}</span></span><b>${rel(r.f.date)}</b></div>`;
     if(r.due){const late=r.due.slice(0,7)<today.slice(0,7);
-      return `<div class="row"><span>${esc(r.n)}<br><span class="mute">Zuletzt ${r.p.dn?esc(r.p.dn)+', ':''}${fmt(r.p.date)}${q}${late?' · <span style="color:var(--per)">überfällig</span>':''}</span></span><b>${ym(r.due)}</b></div>`}
-    return `<div class="row"><span>${esc(r.n)}<br><span class="mute">Zuletzt ${r.p.dn?esc(r.p.dn)+', ':''}${fmt(r.p.date)}</span></span><span class="mute">kein Termin geplant</span></div>`};
+      return `<div class="row"><span><i class="dot no"></i>${esc(r.n)}<br><span class="mute">nicht gebucht · Zuletzt ${r.p.dn?esc(r.p.dn)+', ':''}${fmt(r.p.date)}${q}${late?' · <span style="color:var(--per)">überfällig</span>':''}</span></span><b>${ym(r.due)}</b></div>`}
+    return `<div class="row"><span><i class="dot no"></i>${esc(r.n)}<br><span class="mute">nicht gebucht · Zuletzt ${r.p.dn?esc(r.p.dn)+', ':''}${fmt(r.p.date)}</span></span><span class="mute">kein Termin geplant</span></div>`};
   return `<h2>Arzttermine</h2><button class="btn pri" onclick="op(today)">Termin eintragen</button>
   <div class="card"><div class="mute">Nächster Termin je Ärztin/Arzt</div>${rows.length?rows.map(row).join(''):'<p class="mute">Noch keine Termine eingetragen.</p>'}</div>
   ${up.length?`<div class="card"><div class="mute">Alle anstehenden Termine</div>${up.map(li).join('')}</div>`:''}
